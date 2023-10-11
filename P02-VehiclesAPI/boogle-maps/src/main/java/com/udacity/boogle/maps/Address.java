@@ -1,8 +1,11 @@
 package com.udacity.boogle.maps;
 
+import lombok.Getter;
+
 /**
  * Declares a class to store an address, city, state and zip code.
  */
+@Getter
 public class Address {
 
     private String address;
@@ -20,32 +23,16 @@ public class Address {
         this.zip = zip;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getCity() {
-        return city;
     }
 
     public void setCity(String city) {
         this.city = city;
     }
 
-    public String getState() {
-        return state;
-    }
-
     public void setState(String state) {
         this.state = state;
-    }
-
-    public String getZip() {
-        return zip;
     }
 
     public void setZip(String zip) {
