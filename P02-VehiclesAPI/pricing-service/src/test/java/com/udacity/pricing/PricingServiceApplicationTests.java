@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-//TODO: at least one additional test has been implemented outside of contextLoads()
+//Done: at least one additional test has been implemented outside of contextLoads()
 // for the overall Pricing Service Application.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PricingServiceApplication.class)
