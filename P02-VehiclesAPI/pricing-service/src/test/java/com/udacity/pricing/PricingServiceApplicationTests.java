@@ -14,6 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
+/**
+ * The type Pricing service application tests.
+ */
 //Done: at least one additional test has been implemented outside of contextLoads()
 // for the overall Pricing Service Application.
 @RunWith(SpringRunner.class)
@@ -21,22 +24,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class PricingServiceApplicationTests {
 
-	@Autowired
-	MockMvc mockMvc;
+    /**
+     * The Mock mvc.
+     */
+    @Autowired
+    MockMvc mockMvc;
 
 
-	@Test
-	public void contextLoads() {
-	}
+    /**
+     * Context loads.
+     */
+    @Test
+    public void contextLoads() {
+    }
 
-	/**
-	 * Test spring data REST is working
-	 */
-	@Test
-	public void callTest() throws Exception {
-		mockMvc.perform(get("/prices"))
-				.andExpect(status().isOk())
-				.andExpect(content().json("{}"));
-	}
+    /**
+     * Test spring data REST is working
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void callTest() throws Exception {
+        mockMvc.perform(get("/prices"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
+    }
 
 }

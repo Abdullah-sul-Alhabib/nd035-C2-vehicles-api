@@ -1,6 +1,5 @@
 package com.udacity.vehicles;
 
-import com.netflix.discovery.EurekaNamespace;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.domain.manufacturer.ManufacturerRepository;
 import org.modelmapper.ModelMapper;
@@ -23,12 +22,18 @@ import org.springframework.web.reactive.function.client.WebClient;
 @EnableEurekaClient
 public class VehiclesApiApplication {
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         SpringApplication.run(VehiclesApiApplication.class, args);
     }
 
     /**
      * Initializes the car manufacturers available to the Vehicle API.
+     *
      * @param repository where the manufacturer information persists.
      * @return the car manufacturers to add to the related repository
      */
@@ -43,6 +48,11 @@ public class VehiclesApiApplication {
         };
     }
 
+    /**
+     * Model mapper model mapper.
+     *
+     * @return the model mapper
+     */
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
@@ -50,20 +60,22 @@ public class VehiclesApiApplication {
 
     /**
      * Web Client for the maps (location) API
+     *
      * @param endpoint where to communicate for the maps API
      * @return created maps endpoint
      */
-    @Bean(name="maps")
+    @Bean(name = "maps")
     public WebClient webClientMaps(@Value("${maps.endpoint}") String endpoint) {
         return WebClient.create(endpoint);
     }
 
     /**
      * Web Client for the pricing API
+     *
      * @param endpoint where to communicate for the pricing API
      * @return created pricing endpoint
      */
-    @Bean(name="pricing")
+    @Bean(name = "pricing")
     public WebClient webClientPricing(@Value("${pricing.endpoint}") String endpoint) {
         return WebClient.create(endpoint);
     }

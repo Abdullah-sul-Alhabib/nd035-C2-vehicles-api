@@ -4,10 +4,10 @@ import com.udacity.vehicles.client.maps.MapsClient;
 import com.udacity.vehicles.client.prices.PriceClient;
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.CarRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.stereotype.Service;
 
 /**
  * Implements the car service create, read, update or delete
@@ -22,6 +22,13 @@ public class CarService {
 
     private final CarRepository repository;
 
+    /**
+     * Instantiates a new Car service.
+     *
+     * @param mapsClient  the maps client
+     * @param priceClient the price client
+     * @param repository  the repository
+     */
     public CarService(MapsClient mapsClient, PriceClient priceClient, CarRepository repository) {
         this.mapsClient = mapsClient;
         this.priceClient = priceClient;
@@ -35,14 +42,28 @@ public class CarService {
 
     /**
      * Gathers a list of all vehicles
+     *
      * @return a list of all vehicles in the CarRepository
      */
     public List<Car> list() {
-        return repository.findAll();
+        /*
+        Thank you for the suggestion for improvement:
+        Hey, you could have invoked Pricing and Maps API for each and every vehicle details returned from DB.
+         Please address this if time permits. Thanks.
+         */
+        List<Car> carList = repository.findAll();
+        carList.stream().forEach(
+                car -> {
+                    car.setLocation(mapsClient.getAddress(car.getLocation()));
+                    car.setPrice(priceClient.getPrice(car.getId()));
+                }
+        );
+        return carList;
     }
 
     /**
      * Gets car information by ID (or throws exception if non-existent)
+     *
      * @param id the ID number of the car to gather information on
      * @return the requested car's information, including location and price
      */
@@ -85,6 +106,7 @@ public class CarService {
 
     /**
      * Either creates or updates a vehicle, based on prior existence of car
+     *
      * @param car A car object, which can be either new or existing
      * @return the new/updated car is stored in the repository
      */
@@ -94,6 +116,7 @@ public class CarService {
                     .map(carToBeUpdated -> {
                         carToBeUpdated.setDetails(car.getDetails());
                         carToBeUpdated.setLocation(car.getLocation());
+                        carToBeUpdated.setCondition(car.getCondition());
                         return repository.save(carToBeUpdated);
                     }).orElseThrow(CarNotFoundException::new);
         }
@@ -103,6 +126,7 @@ public class CarService {
 
     /**
      * Deletes a given car by ID
+     *
      * @param id the ID number of the car to delete
      */
     public void delete(Long id) {
@@ -110,8 +134,11 @@ public class CarService {
          * Done: Find the car by ID from the `repository` if it exists.
          *   If it does not exist, throw a CarNotFoundException
          */
-        if(repository.existsById(id)){repository.deleteById(id);}
-        else {throw new CarNotFoundException();}
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+        } else {
+            throw new CarNotFoundException();
+        }
 
         /**
          * Done: Delete the car from the repository.

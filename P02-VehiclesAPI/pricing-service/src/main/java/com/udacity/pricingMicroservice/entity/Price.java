@@ -1,6 +1,7 @@
 package com.udacity.pricingMicroservice.entity;
 
 //Changed javax imports to jakarta
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,13 +11,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.math.BigDecimal;
 
 /**
  * Represents the price of a given vehicle, including currency.
  */
-
 @Entity
 @Getter
 @Setter

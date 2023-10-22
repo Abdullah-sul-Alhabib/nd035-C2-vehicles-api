@@ -21,24 +21,35 @@ import java.util.stream.LongStream;
 @SpringBootApplication
 public class PricingServiceApplication {
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         SpringApplication.run(PricingServiceApplication.class, args);
     }
 
-    //Since PricingService is not used, the following will initialize the db with random values
+    private static BigDecimal randomPrice() {
+        return BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble(1, 5))
+                .multiply(new BigDecimal("5000")).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Init database command line runner.
+     *
+     * @param repository the repository
+     * @return the command line runner
+     */
+//Since PricingService is not used, the following will initialize the db with random values
     @Bean
     CommandLineRunner initDatabase(PriceRepository repository) {
         return args -> {
             List<Price> priceList = LongStream
                     .range(1, 21)
-                    .mapToObj(i -> new Price(i,"SAR", randomPrice(), i))
+                    .mapToObj(i -> new Price(i, "USD", randomPrice(), i))
                     .collect(Collectors.toList());
             repository.saveAll(priceList);
         };
-    }
-
-    private static BigDecimal randomPrice() {
-        return new BigDecimal(ThreadLocalRandom.current().nextDouble(1, 5))
-                .multiply(new BigDecimal(5000d)).setScale(2, RoundingMode.HALF_UP);
     }
 }

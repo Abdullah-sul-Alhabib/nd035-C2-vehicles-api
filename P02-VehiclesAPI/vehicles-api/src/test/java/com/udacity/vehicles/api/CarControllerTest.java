@@ -1,17 +1,5 @@
 package com.udacity.vehicles.api;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.udacity.vehicles.client.maps.MapsClient;
 import com.udacity.vehicles.client.prices.PriceClient;
 import com.udacity.vehicles.domain.Condition;
@@ -20,10 +8,11 @@ import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.Details;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.service.CarService;
-import java.net.URI;
-import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -34,7 +23,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
+
+import java.net.URI;
+import java.util.Collections;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Implements testing of the CarController class.
@@ -43,24 +43,21 @@ import org.springframework.test.web.servlet.ResultMatcher;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
+//test ordering to ensure CRUD runs in order
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CarControllerTest {
 
+    private static final String baseUrl = "http://localhost:8084/cars";
     @Autowired
     private MockMvc mvc;
-
     @Autowired
     private JacksonTester<Car> json;
-
     @MockBean
     private CarService carService;
-
     @MockBean
     private PriceClient priceClient;
-
     @MockBean
     private MapsClient mapsClient;
-
-    private static final String baseUrl = "http://localhost:8084/cars";
 
     /**
      * Creates pre-requisites for testing, such as an example car.
@@ -76,24 +73,28 @@ public class CarControllerTest {
 
     /**
      * Tests for successful creation of new car in the system
+     *
      * @throws Exception when car creation fails in the system
      */
     @Test
+    @Order(1)
     public void createCar() throws Exception {
         Car car = getCar();
         mvc.perform(
-                post(new URI("/cars"))
-                        .content(json.write(car).getJson())
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaType.APPLICATION_JSON_UTF8))
+                        post(new URI("/cars"))
+                                .content(json.write(car).getJson())
+                                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                                .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isCreated());
     }
 
     /**
      * Tests if the read operation appropriately returns a list of vehicles.
+     *
      * @throws Exception if the read operation of the vehicle list fails
      */
     @Test
+    @Order(2)
     public void listCars() throws Exception {
         /**
          * Done: Add a test to check that the `get` method works by calling
@@ -114,9 +115,11 @@ public class CarControllerTest {
 
     /**
      * Tests the read operation for a single car by ID.
+     *
      * @throws Exception if the read operation for a single car fails
      */
     @Test
+    @Order(3)
     public void findCar() throws Exception {
         /**
          * Done: Add a test to check that the `get` method works by calling
@@ -131,11 +134,30 @@ public class CarControllerTest {
         verify(carService, times(1)).findById(1L);
     }
 
+    @Test
+    @Order(4)
+    public void updateCar() throws Exception {
+        //holder for updated car
+        Car updatedCar = getCar();
+
+        updatedCar.getDetails().setProductionYear(2023);
+
+        mvc.perform(
+                put(new URI("/cars/1"))
+                        .content(json.write(updatedCar).getJson())
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.details.productionYear", is(2023)));
+    }
     /**
      * Tests the deletion of a single car by ID.
+     *
      * @throws Exception if the delete operation of a vehicle fails
      */
     @Test
+    @Order(5)
     public void deleteCar() throws Exception {
         /**
          * Done: Add a test to check whether a vehicle is appropriately deleted
@@ -153,6 +175,7 @@ public class CarControllerTest {
 
     /**
      * Creates an example Car object for use in testing.
+     *
      * @return an example Car object
      */
     private Car getCar() {

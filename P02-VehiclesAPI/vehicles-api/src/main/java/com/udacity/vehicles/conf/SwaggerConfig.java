@@ -9,11 +9,20 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 import java.util.Collections;
 
+/**
+ * The type Swagger config.
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
+    /**
+     * Api docket.
+     *
+     * @return the docket
+     */
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
